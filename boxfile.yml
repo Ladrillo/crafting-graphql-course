@@ -1,0 +1,31 @@
+run.config:
+  engine: elixir
+
+  engine.config:
+    runtime: elixir-1.5
+    erlang_runtime: erlang-20.1
+
+  dev_packages:
+    - nodejs
+    - inotify-tools
+  
+  extra_packages:
+    - gcc6
+    - automake
+    - autoconf
+
+  fs_watch: true
+
+data.db:
+  image: nanobox/postgresql:9.6
+
+web.main:
+  start: node-start mix phx.server
+
+deploy.config:
+  extra_steps:
+    - mix phoenix.digest
+  before_live:
+    web.main:
+      - mix ecto.create --quiet
+      - mix ecto.migrate
